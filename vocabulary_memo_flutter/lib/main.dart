@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:vocabulary_memo_flutter/services/word_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    final wordService = WordService();
+    await wordService.init();
+    debugPrint("Isar init succsesfullyyy");
+  } catch (e) {
+    debugPrint("Error $e");
+  }
   runApp(const MyApp());
 }
 
