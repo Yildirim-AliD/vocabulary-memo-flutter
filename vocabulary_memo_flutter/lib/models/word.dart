@@ -1,6 +1,6 @@
 import 'package:isar/isar.dart';
 
-part 'word.g.dart'; 
+part 'word.g.dart';
 // This links the generated code file created by running the build_runner command.
 // Run the following command in the terminal to generate this file:
 // flutter pub run build_runner build
@@ -23,4 +23,9 @@ class Word {
     this.story,
     this.imageBytes,
   });
+
+  @override
+  String toString() {
+    return 'Word(id: $id, englishWord: $englishWord, turkishWord: $turkishWord, wordType: $wordType, story: $story, imageBytes: $imageBytes, isLearned: $isLearned)';
+  }
 }

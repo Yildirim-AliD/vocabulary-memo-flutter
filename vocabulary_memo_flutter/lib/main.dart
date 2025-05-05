@@ -6,7 +6,15 @@ void main() async {
   try {
     final wordService = WordService();
     await wordService.init();
-    debugPrint("Isar init succsesfullyyy");
+
+    // Word wortToAdd = Word(
+    //   englishWord: "Garden",
+    //   turkishWord: "Bahçe",
+    //   wordType: "Noun",
+    // );
+    // await wordService.saveWord(wortToAdd);
+    final words = await wordService.getAllWords();
+    debugPrint(words.toString());
   } catch (e) {
     debugPrint("Error $e");
   }
