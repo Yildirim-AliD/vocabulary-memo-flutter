@@ -7,24 +7,17 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:vocabulary_memo_flutter/main.dart';
+import 'package:vocabulary_memo_flutter/services/word_service.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('MainPage renders without crashing', (WidgetTester tester) async {
+    final wordService = WordService();
+    await wordService.init();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    await tester.pumpWidget(
+      MaterialApp(home: MainPage(wordService: wordService)),
+    );
+    expect(find.text("My Words"), findsOneWidget);
   });
 }

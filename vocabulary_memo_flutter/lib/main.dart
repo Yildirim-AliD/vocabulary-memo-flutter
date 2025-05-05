@@ -31,14 +31,20 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  List<Widget> _screens = [WordList(), Center(child: Text("add_word_screen"))];
+
+  List<Widget> getScreens() {
+    return [
+      WordList(wordService: widget.wordService),
+      const Center(child: Text("add_word_screen")),
+    ];
+  }
 
   int _selectedScreen = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("My Words")),
-      body: _screens[_selectedScreen],
+      body: getScreens()[_selectedScreen],
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedScreen,
         destinations: [
