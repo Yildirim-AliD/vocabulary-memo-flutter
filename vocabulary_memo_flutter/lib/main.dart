@@ -31,7 +31,6 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-
   List<Widget> getScreens() {
     return [
       WordList(wordService: widget.wordService),

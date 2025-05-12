@@ -12,6 +12,7 @@ class WordList extends StatefulWidget {
 
 class _WordListState extends State<WordList> {
   late Future<List<Word>> _getAllWords;
+  List<Word> _words = [];
   @override
   void initState() {
     super.initState();
@@ -22,10 +23,20 @@ class _WordListState extends State<WordList> {
     return await widget.wordService.getAllWords();
   }
 
+  // ignore: unused_element
   void _refreshWords() {
     setState(() {
       _getAllWords = _getWordsFromDB();
     });
+  }
+
+  _toggleUpdateWord(Word currentWord) async {
+    await widget.wordService.toggleWordLearned(currentWord.id);
+    final index = _words.indexWhere((element) => element.id == currentWord.id);
+    var changedWord = _words[index];
+    changedWord.isLearned = !changedWord.isLearned;
+    _words[index] = changedWord;
+    setState(() {});
   }
 
   @override
@@ -46,6 +57,7 @@ class _WordListState extends State<WordList> {
                 );
               }
               if (snapshot.hasData) {
+                // ignore: prefer_is_empty
                 return snapshot.data?.length == 0
                     ? Center(child: Text("Lütfen kelime giriniz:"))
                     : _buildListView(snapshot.data);
@@ -60,22 +72,65 @@ class _WordListState extends State<WordList> {
   }
 
   _buildListView(List<Word>? data) {
+    _words = data!;
     return ListView.builder(
       itemBuilder: (context, index) {
-        var currentWord = data?[index];
-        return ListTile(
-          title: Text(currentWord!.englishWord),
-          subtitle: Text(currentWord.turkishWord),
-          trailing: Switch(
-            value: currentWord.isLearned,
-            onChanged: (value) async {
-              await widget.wordService.toggleWordLearned(currentWord.id);
-              _refreshWords();
-            },
+        var currentWord = _words[index];
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+              child: Column(
+                children: [
+                  ListTile(
+                    title: Text(currentWord.englishWord),
+                    subtitle: Text(currentWord.turkishWord),
+                    leading: Chip(label: Text(currentWord.wordType)),
+                    trailing: Switch(
+                      value: currentWord.isLearned,
+                      onChanged: (value) => _toggleUpdateWord(currentWord),
+                    ),
+                  ),
+                  if (currentWord.story != null &&
+                      currentWord.story!.isNotEmpty)
+                    Container(
+                      padding: EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.secondaryContainer.withAlpha(200),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Icon(Icons.lightbulb),
+                              SizedBox(width: 8),
+                              Text("Note"),
+                            ],
+                          ),
+                          SizedBox(height: 4),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              currentWord.story ?? " ",
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
         );
       },
-      itemCount: data?.length,
+      itemCount: data.length,
     );
   }
 }
