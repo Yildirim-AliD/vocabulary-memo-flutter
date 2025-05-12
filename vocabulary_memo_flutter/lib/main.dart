@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vocabulary_memo_flutter/screens/add_word_screen.dart';
 import 'package:vocabulary_memo_flutter/screens/word_list_screen.dart';
 import 'package:vocabulary_memo_flutter/services/word_service.dart';
 
@@ -32,10 +33,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   List<Widget> getScreens() {
-    return [
-      WordList(wordService: widget.wordService),
-      const Center(child: Text("add_word_screen")),
-    ];
+    return [WordList(wordService: widget.wordService), AddWordScreen()];
   }
 
   int _selectedScreen = 0;
