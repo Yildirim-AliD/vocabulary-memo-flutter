@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:vocabulary_memo_flutter/models/word.dart';
 import 'package:vocabulary_memo_flutter/services/word_service.dart';
 
@@ -74,6 +75,7 @@ class _WordListState extends State<WordList> {
   _buildListView(List<Word>? data) {
     _words = data!;
     return ListView.builder(
+      reverse: true,
       itemBuilder: (context, index) {
         var currentWord = _words[index];
         return Padding(
@@ -123,6 +125,13 @@ class _WordListState extends State<WordList> {
                           ),
                         ],
                       ),
+                    ),
+                  if (currentWord.imageBytes != null)
+                    Image.memory(
+                      Uint8List.fromList(currentWord.imageBytes!),
+                      height: 120,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
                     ),
                 ],
               ),

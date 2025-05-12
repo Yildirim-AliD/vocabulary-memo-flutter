@@ -2,9 +2,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:vocabulary_memo_flutter/models/word.dart';
+import 'package:vocabulary_memo_flutter/services/word_service.dart';
 
 class AddWordScreen extends StatefulWidget {
-  const AddWordScreen({super.key});
+  final WordService wordService;
+  final VoidCallback onSave;
+  const AddWordScreen({
+    super.key,
+    required this.wordService,
+    required this.onSave,
+  });
 
   @override
   State<AddWordScreen> createState() => _AddWordScreenState();
@@ -37,12 +45,31 @@ class _AddWordScreenState extends State<AddWordScreen> {
     super.dispose();
   }
 
-  void _saveWord() {}
+  Future<void> _saveWord() async {
+    if (_formKey.currentState!.validate()) {
+      var _englishWord = _englishController.text;
+      var _turkishWord = _turkishController.text;
+      var _story = _storyController.text;
+      await widget.wordService.saveWord(
+        Word(
+          englishWord: _englishWord,
+          turkishWord: _turkishWord,
+          wordType: _selectedWordType,
+          story: _story,
+          imageBytes:
+              _imageFile != null ? await _imageFile!.readAsBytes() : null,
+        ),
+      );
+      widget.onSave();
+    }
+  }
 
   Future<void> _selectedImage() async {
     final image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
-      _imageFile = File(image.path);
+      setState(() {
+        _imageFile = File(image.path);
+      });
     }
   }
 
@@ -51,9 +78,16 @@ class _AddWordScreenState extends State<AddWordScreen> {
     return Padding(
       padding: EdgeInsets.all(16),
       child: Form(
+        key: _formKey,
         child: ListView(
           children: [
             TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return "Please enter english word";
+                }
+                return null;
+              },
               controller: _englishController,
               decoration: InputDecoration(
                 labelText: "English Word",
@@ -62,6 +96,12 @@ class _AddWordScreenState extends State<AddWordScreen> {
             ),
             SizedBox(height: 16),
             TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return "Please enter turkish word";
+                }
+                return null;
+              },
               controller: _turkishController,
               decoration: InputDecoration(
                 labelText: "Turkish Word",

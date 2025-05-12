@@ -33,7 +33,20 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   List<Widget> getScreens() {
-    return [WordList(wordService: widget.wordService), AddWordScreen()];
+    return [
+      WordList(wordService: widget.wordService),
+      AddWordScreen(
+        wordService: widget.wordService,
+        onSave: () {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text("Word Saved")));
+          setState(() {
+            _selectedScreen = 0;
+          });
+        },
+      ),
+    ];
   }
 
   int _selectedScreen = 0;
