@@ -21,7 +21,7 @@ class Word {
     required this.turkishWord,
     required this.wordType,
     this.story,
-    this.imageBytes,
+    this.imageBytes, required bool isLearned,
   });
 
   @override

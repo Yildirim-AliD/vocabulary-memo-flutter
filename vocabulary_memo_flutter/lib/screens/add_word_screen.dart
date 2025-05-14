@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:vocabulary_memo_flutter/models/word.dart';
@@ -8,10 +8,12 @@ import 'package:vocabulary_memo_flutter/services/word_service.dart';
 class AddWordScreen extends StatefulWidget {
   final WordService wordService;
   final VoidCallback onSave;
+  final Word? wordToEdit;
   const AddWordScreen({
     super.key,
     required this.wordService,
     required this.onSave,
+    this.wordToEdit,
   });
 
   @override
@@ -33,9 +35,21 @@ class _AddWordScreenState extends State<AddWordScreen> {
     "Adjective",
     "Verb",
     "Adverb",
-    "phrasal vern",
+    "phrasal verb",
     "Idiom",
   ];
+  @override
+  void initState() {
+    super.initState();
+    if (widget.wordToEdit != null) {
+      var wordToBeUpdated = widget.wordToEdit;
+      _englishController.text = wordToBeUpdated!.englishWord;
+      _turkishController.text = wordToBeUpdated.turkishWord;
+      _storyController.text = wordToBeUpdated.story!;
+      _selectedWordType = wordToBeUpdated.wordType;
+      _isLearned = wordToBeUpdated.isLearned;
+    }
+  }
 
   @override
   void dispose() {
@@ -47,19 +61,30 @@ class _AddWordScreenState extends State<AddWordScreen> {
 
   Future<void> _saveWord() async {
     if (_formKey.currentState!.validate()) {
-      var _englishWord = _englishController.text;
-      var _turkishWord = _turkishController.text;
-      var _story = _storyController.text;
-      await widget.wordService.saveWord(
-        Word(
-          englishWord: _englishWord,
-          turkishWord: _turkishWord,
-          wordType: _selectedWordType,
-          story: _story,
-          imageBytes:
-              _imageFile != null ? await _imageFile!.readAsBytes() : null,
-        ),
+      var englishWord = _englishController.text;
+      var turkishWord = _turkishController.text;
+      var story = _storyController.text;
+      var kelime = Word(
+        englishWord: englishWord,
+        turkishWord: turkishWord,
+        wordType: _selectedWordType,
+        isLearned: _isLearned,
+        story: story,
       );
+
+      if (widget.wordToEdit == null) {
+        kelime.imageBytes =
+            _imageFile != null ? await _imageFile!.readAsBytes() : null;
+        await widget.wordService.saveWord(kelime);
+      } else {
+        kelime.id = widget.wordToEdit!.id;
+        kelime.imageBytes =
+            _imageFile != null
+                ? await _imageFile!.readAsBytes()
+                : widget.wordToEdit?.imageBytes;
+        await widget.wordService.updateWord(kelime);
+      }
+
       widget.onSave();
     }
   }
@@ -117,7 +142,7 @@ class _AddWordScreenState extends State<AddWordScreen> {
               ),
               items:
                   wordType.map((e) {
-                    return DropdownMenuItem(child: Text(e), value: e);
+                    return DropdownMenuItem(value: e, child: Text(e));
                   }).toList(),
               onChanged: (value) {
                 setState(() {
@@ -155,10 +180,25 @@ class _AddWordScreenState extends State<AddWordScreen> {
               icon: Icon(Icons.image),
             ),
             SizedBox(height: 8),
-            if (_imageFile != null)
-              Image.file(_imageFile!, height: 150, fit: BoxFit.cover),
-            SizedBox(height: 8),
-            ElevatedButton(onPressed: _saveWord, child: Text("Save Word")),
+            if (_imageFile != null ||
+                widget.wordToEdit?.imageBytes != null) ...[
+              if (_imageFile != null)
+                Image.file(_imageFile!, height: 150, fit: BoxFit.cover)
+              else if (widget.wordToEdit?.imageBytes != null)
+                Image.memory(
+                  Uint8List.fromList(widget.wordToEdit!.imageBytes!),
+                  height: 150,
+                  fit: BoxFit.cover,
+                ),
+            ],
+            const SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: _saveWord,
+              child:
+                  widget.wordToEdit == null
+                      ? const Text("Save Word")
+                      : const Text("Update Word"),
+            ),
           ],
         ),
       ),

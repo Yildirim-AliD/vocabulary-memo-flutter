@@ -109,12 +109,12 @@ Word _wordDeserialize(
   final object = Word(
     englishWord: reader.readString(offsets[0]),
     imageBytes: reader.readLongList(offsets[1]),
+    isLearned: reader.readBool(offsets[2]),
     story: reader.readStringOrNull(offsets[3]),
     turkishWord: reader.readString(offsets[4]),
     wordType: reader.readString(offsets[5]),
   );
   object.id = id;
-  object.isLearned = reader.readBool(offsets[2]);
   return object;
 }
 
