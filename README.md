@@ -15,7 +15,7 @@ This is a Flutter-based mobile application designed to help users learn English 
 
 | Home Screen | Add Word |
 |-------------|----------|
-| ![Words](screenshots/Screenshot_1.png) | ![Add](screenshots/Screenshot_2.png) |
+| ![Words](vocabulary_memo_flutter/screenshots/Screenshot_1.png) | ![Add](vocabulary_memo_flutter/screenshots/Screenshot_2.png) |
 
 ## 🛠️ Technologies Used
 
