@@ -166,7 +166,7 @@ class _WordListState extends State<WordList> {
               if (snapshot.hasData) {
                 // ignore: prefer_is_empty
                 return snapshot.data?.length == 0
-                    ? Center(child: Text("Lütfen kelime giriniz:"))
+                    ? Center(child: Text("Please add a word"))
                     : _buildListView(snapshot.data);
               } else {
                 return SizedBox();

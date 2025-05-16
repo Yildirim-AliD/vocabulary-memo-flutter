@@ -4,7 +4,6 @@ import 'package:vocabulary_memo_flutter/screens/add_word_screen.dart';
 import 'package:vocabulary_memo_flutter/screens/word_list_screen.dart';
 import 'package:vocabulary_memo_flutter/services/word_service.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final wordservice = WordService();
@@ -18,11 +17,7 @@ void main() async {
   } catch (e) {
     debugPrint("$e");
   }
-  runApp(
-    MyApp(
-      wordservice: wordservice,
-    ),
-  );
+  runApp(MyApp(wordservice: wordservice));
 }
 
 class MyApp extends StatelessWidget {
@@ -32,14 +27,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: MainPage(
-        wordservice: wordservice,
-      ),
+      home: MainPage(wordservice: wordservice),
     );
   }
 }
@@ -65,42 +59,39 @@ class _MainPageState extends State<MainPage> {
 
   List<Widget> getScreens() {
     return [
-      WordList(
-        wordService: widget.wordservice,
-        onEditWord: _editWord,
-      ),
+      WordList(wordService: widget.wordservice, onEditWord: _editWord),
       AddWordScreen(
-          wordService: widget.wordservice,
-          wordToEdit: _wordToEdit,
-          onSave: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Kelime kaydedildi"),
-              ),
-            );
-            setState(() {
-              _selectedScreen = 0;
-              _wordToEdit = null;
-            });
-          }),
+        wordService: widget.wordservice,
+        wordToEdit: _wordToEdit,
+        onSave: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("The word has been saved")),
+          );
+          setState(() {
+            _selectedScreen = 0;
+            _wordToEdit = null;
+          });
+        },
+      ),
     ];
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Kelimelerim"),
-      ),
+      appBar: AppBar(title: const Text("My Words")),
       body: getScreens()[_selectedScreen],
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedScreen,
         destinations: [
           const NavigationDestination(
-              icon: Icon(Icons.list_alt), label: "Kelimeler"),
+            icon: Icon(Icons.list_alt),
+            label: "Words",
+          ),
           NavigationDestination(
-              icon: const Icon(Icons.add_circle_outline),
-              label: _wordToEdit == null ? "Ekle" : 'Güncelle'),
+            icon: const Icon(Icons.add_circle_outline),
+            label: _wordToEdit == null ? "Add" : 'Update',
+          ),
         ],
         onDestinationSelected: (value) {
           setState(() {
